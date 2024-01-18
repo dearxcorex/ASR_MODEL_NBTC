@@ -59,25 +59,21 @@ class PANTIP_Automation:
             all_ul = "//ul[@class='pt-list pt-list-item__full-title pt-list__type-a']"
             ul_elememnt =WebDriverWait(self.driver, 10).until(EC.element_to_be_clickable((By.XPATH, all_ul)))
             
-           # elements = ul_elememnt.find_elements(By.TAG_NAME, "h2")
-            #for li in elements:
             #get number comment
             for index,span_element in enumerate(ul_elememnt.find_elements(By.CLASS_NAME,"pt-li_stats-comment")):
                 desesired_text = re.sub(r"message", "", span_element.text)
                 desesired_text = int(desesired_text)
                 if desesired_text >= 5:
-                    #get post text
+                    #get post text and filter comment >5
                     get_text = ul_elememnt.find_elements(By.TAG_NAME, "h2")[index]
                     print(get_text.text)
-                  #  print("number comment", desesired_text)
-                    # for t in ul_elememnt.find_elements(By.TAG_NAME, "h2"):
-                    #     print("number comment", desesired_text)
-                    #     print(t.text)
-                    # time.sleep(3)
+                    time.sleep(3)
+                    get_text.click()
 
-                # else:
-                #     print("number comment", desesired_text)
-                  
+                    # get text in comment 
+                    all_comment = "display-post-story-wrapper comment-wrapper"
+                    #https://www.selenium.dev/documentation/webdriver/interactions/windows/
+                   
 
          
                
