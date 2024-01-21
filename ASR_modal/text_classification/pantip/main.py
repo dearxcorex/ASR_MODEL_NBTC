@@ -86,8 +86,9 @@ class PANTIP_Automation:
                       
                         comment_texts = [element.text for element in all_comment_elements if element.text]
                         print(comment_texts)
+                        break
                         
-                    except TimeoutException:
+                    except StaleElementReferenceException:
                         print("Comments container not found within timeout.")       
                    
                             
