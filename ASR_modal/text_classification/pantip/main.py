@@ -14,7 +14,7 @@ import re
 class PANTIP_Automation:
     def __init__(self) -> None:
         self.driver = self.initialize_driver()
-        self.driver.set_window_size(1500,1328)
+        self.driver.set_window_size(1700,1500)
 
 
     def initialize_driver(self) -> webdriver.Chrome:
@@ -37,15 +37,8 @@ class PANTIP_Automation:
             )
          
             time.sleep(3)
-            # elem_list = WebDriverWait(self.driver, 10).until(
-            #     EC.element_to_be_clickable((By.XPATH, "//*[@id='gtm-topic-layout-headline']"))
-            # ).click()
-            
             elem.click()
             
-            # elem_list.click()
-
-            # time.sleep(3)
            
           
             # fine name katoo
@@ -57,61 +50,64 @@ class PANTIP_Automation:
             #get number comment
             span_elements = ul_elememnt.find_elements(By.CLASS_NAME,"pt-li_stats-comment")
             for index,span_element in enumerate(span_elements):
-                try:
-                    desesired_text = re.sub(r"message", "", span_element.text)
-                    print(desesired_text)
-                    desesired_text = int(desesired_text)
-                    if desesired_text >= 5:
-                        #get post text and filter comment >5
-                        
-                    # WebDriverWait(self.driver, 10).until(EC.visibility_of_element_located((By.TAG_NAME, "h2")))
-                        get_text = ul_elememnt.find_elements(By.TAG_NAME, "h2")[index]
-                        print(get_text.text)
-                        time.sleep(3)
-                        
-                        get_text.click()
-                        print("just clicked")
-                        #print(len(self.driver.window_handles))
-                        self.driver.switch_to.window(self.driver.window_handles[1])
-
-                        #get text in comment
-                        get_id = "comments-jsrender"
-                        
-                        comments_container = WebDriverWait(self.driver, 20).until(EC.visibility_of_element_located((By.ID, get_id)))
-                        #time.sleep(3)
-                        all_comment_elements = comments_container.find_elements(By.XPATH, "//*[@class='display-post-story-wrapper comment-wrapper']")
-                        
-                        if all_comment_elements:
-                            comment_texts = [element.text for element in all_comment_elements if element.text]
-                            print(comment_texts)
-                        else:
-                            print("Comments container not found.")
-                
-                
-                except exceptions.StaleElementReferenceException as e:
-                        print(f"{e}Comments container not found within timeout.")       
-                   
-                        print("dearxoasis")
+                # try:
+                    try:
+                        desesired_text = re.sub(r"message", "", span_element.text)
+                        print(desesired_text)
+                        desesired_text = int(desesired_text)
+                        #fileter number comment
+                        if desesired_text >= 10:
+                       
                             
+                       
+                            h2_elements = ul_elememnt.find_elements(By.TAG_NAME, "h2")[index]
+                            #get_text = h2_elements
+                            
+                           # WebDriverWait(self.driver,10).until(EC.presence_of_element_located(h2_elements))
+                            time.sleep(3)
+                            print(h2_elements.text)
+                            
+                            
+                            h2_elements.click()
+                            print("just clicked")
+                            #process tab 1 
+                            self.driver.switch_to.window(self.driver.window_handles[1])
+
+                            #get text in comment
+                            get_id = "comments-jsrender"
+                            
+                            comments_container = WebDriverWait(self.driver, 20).until(EC.visibility_of_element_located((By.ID, get_id)))
+                            time.sleep(3)
+                            all_comment_elements = comments_container.find_elements(By.XPATH, "//*[@class='display-post-story-wrapper comment-wrapper']")
+                         
+                            #loop all comment to list 
+                            if all_comment_elements:
+                                comment_texts = [element.text for element in all_comment_elements if element.text]
+                                print(comment_texts)
+                                self.driver.close()
+                                self.driver.switch_to.window(original_window)
+
+                            else:
+                                print("Comments container not found.")
+                    except StaleElementReferenceException:
+                        print("Element became stale, refreshing...")
+                        break
+                   
+                     
 
                     
                     
 
-             
-
-                    # # get text in comment 
-                    # all_comment = "display-post-story-wrapper comment-wrapper"
-                    # #https://www.selenium.dev/documentation/webdriver/interactions/windows/
+    
                               
 
          
                
                     
-            # print(desired_text)
+      
             assert "No results found." not in self.driver.page_source
 
         finally:
-            #print("done")
             time.sleep(3)
             self.driver.quit()  # Close the browser gracefully
 
