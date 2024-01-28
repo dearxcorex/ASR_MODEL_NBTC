@@ -4,7 +4,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.chrome.options import Options
 from selenium.common.exceptions import NoSuchElementException, TimeoutException,StaleElementReferenceException
-from selenium.common import exceptions
+
 import time
 
 import re 
@@ -56,39 +56,37 @@ class PANTIP_Automation:
                         print(desesired_text)
                         desesired_text = int(desesired_text)
                         #fileter number comment
-                        if desesired_text >= 10:
+                        if desesired_text >= 2:
                        
-                            
-                       
-                            h2_elements = ul_elememnt.find_elements(By.TAG_NAME, "h2")[index]
-                            #get_text = h2_elements
-                            
-                           # WebDriverWait(self.driver,10).until(EC.presence_of_element_located(h2_elements))
-                            time.sleep(3)
-                            print(h2_elements.text)
-                            
-                            
-                            h2_elements.click()
-                            print("just clicked")
-                            #process tab 1 
-                            self.driver.switch_to.window(self.driver.window_handles[1])
 
-                            #get text in comment
-                            get_id = "comments-jsrender"
-                            
-                            comments_container = WebDriverWait(self.driver, 20).until(EC.visibility_of_element_located((By.ID, get_id)))
-                            time.sleep(3)
-                            all_comment_elements = comments_container.find_elements(By.XPATH, "//*[@class='display-post-story-wrapper comment-wrapper']")
-                         
-                            #loop all comment to list 
-                            if all_comment_elements:
-                                comment_texts = [element.text for element in all_comment_elements if element.text]
-                                print(comment_texts)
-                                self.driver.close()
-                                self.driver.switch_to.window(original_window)
+                            #loop all comment to get posts text and text comments 
+                            x_path = "//div[@class='pt-list-item__title']/h2/a[@class='gtm-latest-topic gtm-topic-layout-compact gtm-topic-type-filter-favorite']"
+                            h2_elements = ul_elememnt.find_elements(By.XPATH, x_path)
+                            for element in h2_elements:
+                                print(element.text)
 
-                            else:
-                                print("Comments container not found.")
+                                element.click()
+                                time.sleep(3)
+                                self.driver.switch_to.window(self.driver.window_handles[1])
+
+                                #get text in comment
+                                get_id = "comments-jsrender"
+                                
+                                comments_container = WebDriverWait(self.driver, 20).until(EC.visibility_of_element_located((By.ID, get_id)))
+                                time.sleep(3)
+                                all_comment_elements = comments_container.find_elements(By.XPATH, "//*[@class='display-post-story-wrapper comment-wrapper']")
+                            
+                                #loop all comment to list 
+                                if all_comment_elements:
+                                    comment_texts = [element.text for element in all_comment_elements if element.text]
+                                    print(comment_texts)
+                                    self.driver.close()
+                                    self.driver.switch_to.window(original_window)
+
+                                else:
+                                    print("Comments container not found.")
+
+
                     except StaleElementReferenceException:
                         print("Element became stale, refreshing...")
                         break
