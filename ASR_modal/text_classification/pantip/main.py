@@ -49,6 +49,12 @@ class PANTIP_Automation:
   
             #get number comment
             span_elements = ul_elememnt.find_elements(By.CLASS_NAME,"pt-li_stats-comment")
+
+            #scroll window 
+            prev_height = -1 
+            max_scrolls = 100 
+            scroll_count = 0
+
             for index,span_element in enumerate(span_elements):
                 # try:
                     try:
@@ -62,10 +68,14 @@ class PANTIP_Automation:
                             #loop all comment to get posts text and text comments 
                             x_path = "//div[@class='pt-list-item__title']/h2/a[@class='gtm-latest-topic gtm-topic-layout-compact gtm-topic-type-filter-favorite']"
                             h2_elements = ul_elememnt.find_elements(By.XPATH, x_path)
+                           # WebDriverWait(self.driver, 20).until(EC.element_to_be_clickable((By.XPATH, x_path))).click()
                             for element in h2_elements:
+
                                 print(element.text)
 
-                                element.click()
+                                self.driver.execute_script("arguments[0].click();", element)
+                                time.sleep(3)
+                                self.driver.execute_script('window.scrollTo(0, 1000)')
                                 time.sleep(3)
                                 self.driver.switch_to.window(self.driver.window_handles[1])
 
@@ -80,6 +90,7 @@ class PANTIP_Automation:
                                 if all_comment_elements:
                                     comment_texts = [element.text for element in all_comment_elements if element.text]
                                     print(comment_texts)
+                                    time.sleep(3)
                                     self.driver.close()
                                     self.driver.switch_to.window(original_window)
 
