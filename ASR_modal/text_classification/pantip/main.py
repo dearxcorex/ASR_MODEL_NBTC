@@ -4,9 +4,10 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.chrome.options import Options
 from selenium.common.exceptions import NoSuchElementException, TimeoutException,StaleElementReferenceException
+import pandas as pd 
+
 
 import time
-
 import re 
 
 
@@ -50,12 +51,10 @@ class PANTIP_Automation:
             #get number comment
             span_elements = ul_elememnt.find_elements(By.CLASS_NAME,"pt-li_stats-comment")
 
-            #scroll window 
-            prev_height = -1 
-            max_scrolls = 100 
-            scroll_count = 0
-
-            for index,span_element in enumerate(span_elements):
+            #keep data frame 
+            data_frame_title = {}
+            data_frame_comment = {}
+            for span_element in (span_elements):
                 # try:
                     try:
                         desesired_text = re.sub(r"message", "", span_element.text)
@@ -68,11 +67,14 @@ class PANTIP_Automation:
                             #loop all comment to get posts text and text comments 
                             x_path = "//div[@class='pt-list-item__title']/h2/a[@class='gtm-latest-topic gtm-topic-layout-compact gtm-topic-type-filter-favorite']"
                             h2_elements = ul_elememnt.find_elements(By.XPATH, x_path)
-                           # WebDriverWait(self.driver, 20).until(EC.element_to_be_clickable((By.XPATH, x_path))).click()
+
                             for element in h2_elements:
 
                                 print(element.text)
+                                #add to dataframe
+                                data_frame_title.setdefault("title",[]).append(element.text)
 
+                                print(data_frame_title)
                                 self.driver.execute_script("arguments[0].click();", element)
                                 time.sleep(3)
                                 self.driver.execute_script('window.scrollTo(0, 1000)')
@@ -89,7 +91,8 @@ class PANTIP_Automation:
                                 #loop all comment to list 
                                 if all_comment_elements:
                                     comment_texts = [element.text for element in all_comment_elements if element.text]
-                                    print(comment_texts)
+                                    print(len(comment_texts))
+                                    scaped_comment_dict = {"comment":comment_texts}
                                     time.sleep(3)
                                     self.driver.close()
                                     self.driver.switch_to.window(original_window)
