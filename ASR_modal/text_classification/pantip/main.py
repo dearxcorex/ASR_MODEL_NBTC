@@ -52,13 +52,13 @@ class PANTIP_Automation:
             span_elements = ul_elememnt.find_elements(By.CLASS_NAME,"pt-li_stats-comment")
 
             #keep data frame 
-            data_frame_title = {}
-            data_frame_comment = {}
+            data_frame_title = pd.DataFrame()
+            data_frame_comment = pd.DataFrame()
             for span_element in (span_elements):
                 # try:
                     try:
                         desesired_text = re.sub(r"message", "", span_element.text)
-                        print(desesired_text)
+                        #print(desesired_text)
                         desesired_text = int(desesired_text)
                         #fileter number comment
                         if desesired_text >= 2:
@@ -70,18 +70,18 @@ class PANTIP_Automation:
 
                             for element in h2_elements:
 
-                                print(element.text)
+                                #print(element.text)
                                 #add to dataframe
-                                data_frame_title.setdefault("title",[]).append(element.text)
-
-                                print(data_frame_title)
+                                #data_frame_title.setdefault("title",[]).append(element.text)
+                                data_frame_title = pd.concat([data_frame_title, pd.DataFrame({"title": element.text}, index=[0])], ignore_index=True)
+                                #print(data_frame_title)
                                 self.driver.execute_script("arguments[0].click();", element)
                                 time.sleep(3)
                                 self.driver.execute_script('window.scrollTo(0, 1000)')
                                 time.sleep(3)
                                 self.driver.switch_to.window(self.driver.window_handles[1])
 
-                                #get text in comment
+                                #get text in comment 
                                 get_id = "comments-jsrender"
                                 
                                 comments_container = WebDriverWait(self.driver, 20).until(EC.visibility_of_element_located((By.ID, get_id)))
@@ -89,17 +89,36 @@ class PANTIP_Automation:
                                 all_comment_elements = comments_container.find_elements(By.XPATH, "//*[@class='display-post-story-wrapper comment-wrapper']")
                             
                                 #loop all comment to list 
-                                if all_comment_elements:
+                                if all_comment_elements and len(data_frame_comment)<=100:
+                                   
                                     comment_texts = [element.text for element in all_comment_elements if element.text]
-                                    print(len(comment_texts))
-                                    scaped_comment_dict = {"comment":comment_texts}
+
+                                    #add to dataframe
+                                   
+                                    data_frame_comment = pd.concat([data_frame_comment, pd.DataFrame({"comments": comment_texts})], ignore_index=True)
+                                    
+                                   #data_frame_comment.setdefault("comment",[]).append(str(comment_texts))
+                                   # print(f" number of text comment:{len(comment_texts)} and number of title:{len(data_frame_title)}")
+                                    # if len(data_frame_comment) >= 100 and len(data_frame_title) >= 10:
+                                    #     data_frame_comment.setdefault("comment",[]).append(comment_texts)
+                                    #     print(f" number of text comment:{len(comment_texts)} and number of title:{len(data_frame_title)}")
+                                    
                                     time.sleep(3)
                                     self.driver.close()
                                     self.driver.switch_to.window(original_window)
+                                    print(f" number of text post: {len(data_frame_title)} and text comment: {len(data_frame_comment)}")
 
+
+                                
+                                       
                                 else:
-                                    print("Comments container not found.")
-
+                
+                                    # to csv
+                                    data_frame_comment.to_csv('comments.csv', index=False)
+                                    data_frame_title.to_csv('titles.csv', index=False)
+                                    
+                                    print("Finish ")
+                             
 
                     except StaleElementReferenceException:
                         print("Element became stale, refreshing...")
