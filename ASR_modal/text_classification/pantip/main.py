@@ -20,6 +20,7 @@ class PANTIP_Automation:
 
     def initialize_driver(self) -> webdriver.Chrome:
         option = Options()
+        option.add_argument("--headless")
         option.add_experimental_option("detach", True)
         driver = webdriver.Chrome(options=option)
 
@@ -89,7 +90,7 @@ class PANTIP_Automation:
                                 all_comment_elements = comments_container.find_elements(By.XPATH, "//*[@class='display-post-story-wrapper comment-wrapper']")
                             
                                 #loop all comment to list 
-                                if all_comment_elements and len(data_frame_comment)<=100:
+                                if all_comment_elements and len(data_frame_comment)<=1000:
                                    
                                     comment_texts = [element.text for element in all_comment_elements if element.text]
 
@@ -114,8 +115,8 @@ class PANTIP_Automation:
                                 else:
                 
                                     # to csv
-                                    data_frame_comment.to_csv('comments.csv', index=False)
-                                    data_frame_title.to_csv('titles.csv', index=False)
+                                    data_frame_comment.to_csv('comments.csv', index=True)
+                                    data_frame_title.to_csv('titles.csv', index=True)
                                     
                                     print("Finish ")
                              
